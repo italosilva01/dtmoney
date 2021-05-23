@@ -6,7 +6,7 @@ import { Container, TransactionTypeContainer, RadioBox } from "./styles";
 import closeImg from "../../assets/close.svg";
 import incomeImg from "../../assets/income.svg";
 import outcomeImg from "../../assets/outcome.svg";
-import { api } from "../../service/api";
+import { useTransactions } from "../../hooks/useTransactions";
 
 interface NewTransactionModalProps {
   isOpen: boolean;
@@ -21,12 +21,18 @@ export function NewTransactionModal({
   const [category, setCategory] = useState("");
   const [type, setType] = useState("deposit");
 
-  function handleCreateNewTransaction(event: FormEvent) {
+  const { createTransaction } = useTransactions();
+
+  async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
+    await createTransaction({ title, amount: value, category, type });
 
-    const data = { title, value, type, category };
+    setTitle("");
+    setValue(0);
+    setCategory("");
+    setType("");
 
-    api.post("/transaction", data);
+    onRequestClose();
   }
 
   return (
